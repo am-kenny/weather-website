@@ -1,19 +1,30 @@
 body {
     background-color: #292929;
     color: #fff;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
 }
 
-.container {
+#formContainer {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
     margin-top: 50px;
+    box-sizing: border-box;
 }
 
 #successScreen {
     display: none;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    width: 100%;
 }
 
 .form-container {

@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", function() {
-    fetch('navbar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.body.insertAdjacentHTML('afterbegin', data);
+    Promise.all([
+        fetch('navbar.html').then(response => response.text()),
+        fetch('footer.html').then(response => response.text())
+    ])
+        .then(([navbarHtml, footerHtml]) => {
+            document.body.insertAdjacentHTML('afterbegin', navbarHtml);
+            document.body.insertAdjacentHTML('beforeend', footerHtml);
 
             let lastScrollTop = 0;
             const navbar = document.querySelector('.navbar');

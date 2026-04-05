@@ -24,7 +24,7 @@ form.addEventListener('submit', function(e) {
             let json = await response.json();
             if (response.status === 200) {
                 formContainer.style.display = 'none';
-                successScreen.style.display = 'block';
+                successScreen.style.display = 'flex';
             } else {
                 console.log(response);
                 result.innerHTML = json.message;
