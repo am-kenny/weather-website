@@ -37,12 +37,20 @@
             <p id="feelsLike"></p>
         </div>
         <div class="forecast non-selectable" id="hourlyForecast" style="display: none;">
-            <h2>Daily Forecast</h2>
-            <div id="hourlyForecastContainer" class="horizontal-forecast"></div>
+            <h2>Hourly forecast</h2>
+            <div class="forecast-carousel" role="region" aria-roledescription="carousel" aria-label="Hourly forecast">
+                <button type="button" class="carousel-btn carousel-prev" aria-label="Scroll hourly forecast left" disabled>‹</button>
+                <div id="hourlyForecastContainer" class="horizontal-forecast" tabindex="0"></div>
+                <button type="button" class="carousel-btn carousel-next" aria-label="Scroll hourly forecast right">›</button>
+            </div>
         </div>
         <div class="forecast non-selectable" id="forecast" style="display: none;">
             <h2>5-Day Forecast</h2>
-            <div id="forecastContainer" class="horizontal-forecast"></div>
+            <div class="forecast-carousel" role="region" aria-roledescription="carousel" aria-label="Five day forecast">
+                <button type="button" class="carousel-btn carousel-prev" aria-label="Scroll 5-day forecast left" disabled>‹</button>
+                <div id="forecastContainer" class="horizontal-forecast" tabindex="0"></div>
+                <button type="button" class="carousel-btn carousel-next" aria-label="Scroll 5-day forecast right">›</button>
+            </div>
         </div>
     </div>
 

@@ -96,9 +96,10 @@ async function fetchData(weatherUrl, forecastUrl, unit) {
         const nextDayString = nextDay.toISOString().split('T')[0];
 
         const hourlyForecast = forecastData.list.filter(item => item.dt_txt.startsWith(nextDayString));
+        const hourlyEl = document.getElementById('hourlyForecast');
+        const hourlyForecastContainer = document.getElementById('hourlyForecastContainer');
         if (hourlyForecast.length > 0) {
-            document.getElementById('hourlyForecast').style.display = 'block';
-            const hourlyForecastContainer = document.getElementById('hourlyForecastContainer');
+            hourlyEl.style.display = 'block';
             hourlyForecastContainer.innerHTML = '';
             hourlyForecast.forEach(forecastItem => {
                 const time = new Date(forecastItem.dt_txt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
@@ -118,36 +119,13 @@ async function fetchData(weatherUrl, forecastUrl, unit) {
                     </div>
                 `;
             });
+        } else {
+            hourlyEl.style.display = 'none';
+            hourlyForecastContainer.innerHTML = '';
         }
 
-        // Add drag-to-scroll functionality
-        const scrollContainers = document.querySelectorAll('.horizontal-forecast');
-        scrollContainers.forEach(container => {
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            container.addEventListener('mousedown', (e) => {
-                isDown = true;
-                container.classList.add('active');
-                startX = e.pageX - container.offsetLeft;
-                scrollLeft = container.scrollLeft;
-            });
-            container.addEventListener('mouseleave', () => {
-                isDown = false;
-                container.classList.remove('active');
-            });
-            container.addEventListener('mouseup', () => {
-                isDown = false;
-                container.classList.remove('active');
-            });
-            container.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                const x = e.pageX - container.offsetLeft;
-                const walk = (x - startX) * 3; // Scroll-fast
-                container.scrollLeft = scrollLeft - walk;
-            });
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.horizontal-forecast').forEach(updateCarouselNavState);
         });
 
     } catch (error) {
@@ -155,4 +133,85 @@ async function fetchData(weatherUrl, forecastUrl, unit) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', getLocation);
+function getScrollStep(container) {
+    const card = container.querySelector('.forecast-day, .forecast-hour');
+    if (!card) return 260;
+    const gap = parseFloat(getComputedStyle(container).gap) || 10;
+    return card.offsetWidth + gap;
+}
+
+function updateCarouselNavState(container) {
+    const carousel = container.closest('.forecast-carousel');
+    if (!carousel) return;
+    const prev = carousel.querySelector('.carousel-prev');
+    const next = carousel.querySelector('.carousel-next');
+    if (!prev || !next) return;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const eps = 2;
+    const overflows = maxScroll > eps;
+    carousel.classList.toggle('has-overflow', overflows);
+    prev.disabled = !overflows || container.scrollLeft <= eps;
+    next.disabled = !overflows || container.scrollLeft >= maxScroll - eps;
+}
+
+function initForecastCarousels() {
+    document.querySelectorAll('.horizontal-forecast').forEach((container) => {
+        let isDown = false;
+        let startX = 0;
+        let scrollLeft = 0;
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            isDown = true;
+            container.classList.add('active');
+            startX = e.pageX;
+            scrollLeft = container.scrollLeft;
+        });
+        container.addEventListener('mouseleave', () => {
+            isDown = false;
+            container.classList.remove('active');
+        });
+        container.addEventListener('mouseup', () => {
+            isDown = false;
+            container.classList.remove('active');
+        });
+        container.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const walk = (e.pageX - startX) * 1.25;
+            container.scrollLeft = scrollLeft - walk;
+        });
+
+        container.addEventListener('scroll', () => updateCarouselNavState(container), { passive: true });
+
+        container.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            e.preventDefault();
+            const delta = e.key === 'ArrowRight' ? getScrollStep(container) : -getScrollStep(container);
+            container.scrollBy({ left: delta, behavior: 'smooth' });
+        });
+    });
+
+    document.querySelectorAll('.forecast-carousel').forEach((carousel) => {
+        const track = carousel.querySelector('.horizontal-forecast');
+        const prev = carousel.querySelector('.carousel-prev');
+        const next = carousel.querySelector('.carousel-next');
+        if (!track || !prev || !next) return;
+
+        prev.addEventListener('click', () => {
+            track.scrollBy({ left: -getScrollStep(track), behavior: 'smooth' });
+        });
+        next.addEventListener('click', () => {
+            track.scrollBy({ left: getScrollStep(track), behavior: 'smooth' });
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        document.querySelectorAll('.horizontal-forecast').forEach(updateCarouselNavState);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initForecastCarousels();
+    getLocation();
+});

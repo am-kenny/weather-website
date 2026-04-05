@@ -34,8 +34,8 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 90%;
-    width: 800px; /* Increased width */
+    max-width: 95%;
+    width: 1100px;
     margin: 100px 10px 10px;
 
 }
@@ -63,17 +63,107 @@ body {
     margin-top: 40px;
 }
 
+.forecast-carousel {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 0 -4px;
+}
+
+.forecast-carousel.has-overflow::before,
+.forecast-carousel.has-overflow::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    width: 36px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 8px;
+}
+
+.forecast-carousel.has-overflow::before {
+    left: 40px;
+    background: linear-gradient(to right, #333 30%, transparent);
+}
+
+.forecast-carousel.has-overflow::after {
+    right: 40px;
+    background: linear-gradient(to left, #333 30%, transparent);
+}
+
+.carousel-btn {
+    flex: 0 0 40px;
+    align-self: center;
+    z-index: 2;
+    height: 44px;
+    margin: 0 2px;
+    border: 1px solid rgba(197, 253, 57, 0.45);
+    border-radius: 10px;
+    background: rgba(68, 68, 68, 0.95);
+    color: #c5fd39;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+}
+
+.carousel-btn:hover:not(:disabled) {
+    background: rgba(197, 253, 57, 0.2);
+    border-color: #c5fd39;
+}
+
+.carousel-btn:focus-visible {
+    outline: 2px solid #c5fd39;
+    outline-offset: 2px;
+}
+
+.carousel-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.forecast-carousel:not(.has-overflow) .carousel-btn {
+    display: none;
+}
+
 .horizontal-forecast {
+    flex: 1;
+    min-width: 0;
     display: flex;
     overflow-x: auto;
     gap: 10px;
-    padding: 10px;
+    padding: 10px 4px;
     scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(197, 253, 57, 0.5) rgba(255, 255, 255, 0.06);
+}
+
+.horizontal-forecast:focus-visible {
+    outline: 2px solid #c5fd39;
+    outline-offset: 2px;
 }
 
 .horizontal-forecast::-webkit-scrollbar {
-    width: 0;
-    height: 0; /* Safari and Chrome */
+    height: 6px;
+}
+
+.horizontal-forecast::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+}
+
+.horizontal-forecast::-webkit-scrollbar-thumb {
+    background: rgba(197, 253, 57, 0.45);
+    border-radius: 3px;
+}
+
+.horizontal-forecast::-webkit-scrollbar-thumb:hover {
+    background: rgba(197, 253, 57, 0.65);
 }
 
 .forecast-day, .forecast-hour {
@@ -89,6 +179,8 @@ body {
     align-items: center; /* Centering content horizontally */
     text-align: center; /* Centering text */
     cursor: grab; /* Add cursor style for draggable elements */
+    scroll-snap-align: center;
+    scroll-snap-stop: normal;
 }
 
 .forecast-day:active, .forecast-hour:active {
@@ -225,7 +317,40 @@ input:checked + .slider:before {
     color: #fff;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .horizontal-forecast {
+        scroll-behavior: auto;
+    }
+
+    .carousel-btn {
+        transition: none;
+    }
+}
+
 @media (max-width: 600px) {
+    .forecast-carousel {
+        margin: 0 -2px;
+    }
+
+    .forecast-carousel.has-overflow::before,
+    .forecast-carousel.has-overflow::after {
+        width: 24px;
+    }
+
+    .forecast-carousel.has-overflow::before {
+        left: 36px;
+    }
+
+    .forecast-carousel.has-overflow::after {
+        right: 36px;
+    }
+
+    .carousel-btn {
+        flex-basis: 34px;
+        height: 40px;
+        font-size: 22px;
+    }
+
     .weather-container {
         width: 100%;
         padding: 10px;
