@@ -1,4 +1,5 @@
-const apiKey = 'e4c7d413beed7d8cc6521ae67ca4d8f0';
+const WEATHER_API_BASE = 'https://weather-api.andrii-prykhodko.com';
+
 let lat;
 let lon;
 let lastCity;
@@ -22,8 +23,10 @@ function getSelectedUnit() {
 
 async function getWeatherByCoords(lat, lon) {
     const unit = getSelectedUnit();
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${unit}`;
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${unit}`;
+    const params = new URLSearchParams({ units: unit, lat: String(lat), lon: String(lon) });
+    const qs = params.toString();
+    const weatherUrl = `${WEATHER_API_BASE}/weather?${qs}`;
+    const forecastUrl = `${WEATHER_API_BASE}/forecast?${qs}`;
 
     await fetchData(weatherUrl, forecastUrl, unit);
 }
@@ -40,8 +43,10 @@ async function getWeather() {
 
     lastCity = city;
     const unit = getSelectedUnit();
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=${unit}`;
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=${unit}`;
+    const params = new URLSearchParams({ units: unit, q: city });
+    const qs = params.toString();
+    const weatherUrl = `${WEATHER_API_BASE}/weather?${qs}`;
+    const forecastUrl = `${WEATHER_API_BASE}/forecast?${qs}`;
 
     await fetchData(weatherUrl, forecastUrl, unit);
 }
