@@ -1,0 +1,32 @@
+name: Cloudflare Pages Cleanup
+# Uses shared workflow from https://github.com/am-kenny/cloudflare-workflows
+
+on:
+  push:
+  delete:
+
+jobs:
+  cleanup-old-deployments:
+    # Remove all branch deployments except the latest one
+    if: github.event_name == 'push'
+    uses: am-kenny/cloudflare-workflows/.github/workflows/cf-pages-cleanup.yml@main
+    with:
+      branch: ${{ github.ref_name }}
+      mode: keep-latest
+      commit-sha: ${{ github.sha }}
+    secrets:
+      cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      cloudflare-project-name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+
+  cleanup-deleted-branch:
+    # Remove all deployments for deleted branch
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch'
+    uses: am-kenny/cloudflare-workflows/.github/workflows/cf-pages-cleanup.yml@main
+    with:
+      branch: ${{ github.event.ref }}
+      mode: delete-all
+    secrets:
+      cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      cloudflare-project-name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
